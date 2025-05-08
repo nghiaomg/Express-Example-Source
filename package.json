@@ -17,9 +17,9 @@
     "helmet": "^6.0.1",
     "jsonwebtoken": "^9.0.0",
     "morgan": "^1.10.0",
-    "mssql": "^10.0.4",
-    "node-cron": "^3.0.2",
+    "mysql2": "^3.9.2",
     "sequelize": "^6.37.7",
+    "node-cron": "^3.0.2",
     "socket.io": "^4.6.1"
   },
   "devDependencies": {
