@@ -1,33 +1,31 @@
 const express = require('express');
 const router = express.Router();
 const categoryController = require('../controllers/category.controller');
-const { authenticate, authorize } = require('../middleware/auth');
+const { authenticate, isAdmin } = require('../middleware/auth.middleware');
 const { validateCategory } = require('../middleware/validators');
 
-// Public routes
 router.get('/', categoryController.getAllCategories);
 router.get('/with-article-count', categoryController.getCategoriesWithArticleCount);
 router.get('/:id', categoryController.getCategoryById);
 router.get('/slug/:slug', categoryController.getCategoryBySlug);
 
-// Protected routes (Admin only)
 router.post('/', 
   authenticate, 
-  authorize(['admin']), 
+  isAdmin, 
   validateCategory, 
   categoryController.createCategory
 );
 
 router.put('/:id', 
   authenticate, 
-  authorize(['admin']), 
+  isAdmin, 
   validateCategory, 
   categoryController.updateCategory
 );
 
 router.delete('/:id', 
   authenticate, 
-  authorize(['admin']), 
+  isAdmin, 
   categoryController.deleteCategory
 );
 
