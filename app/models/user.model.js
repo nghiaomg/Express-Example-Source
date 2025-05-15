@@ -2,12 +2,6 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 
 const userSchema = new mongoose.Schema({
-  username: {
-    type: String,
-    required: true,
-    unique: true,
-    trim: true
-  },
   email: {
     type: String,
     required: true,
@@ -15,24 +9,32 @@ const userSchema = new mongoose.Schema({
     trim: true,
     lowercase: true
   },
+  name: {
+    type: String,
+    required: true,
+    trim: true
+  },
+  avatar: {
+    type: String,
+    default: ''
+  },
+  authProvider: {
+    type: String,
+    enum: ['local', 'google', 'facebook'],
+    default: 'local'
+  },
   password: {
     type: String,
-    required: true
-  },
-  firstName: {
-    type: String,
-    trim: true
-  },
-  lastName: {
-    type: String,
-    trim: true
+    required: function() {
+      return this.authProvider === 'local';
+    }
   },
   role: {
     type: String,
-    enum: ['user', 'admin'],
-    default: 'user'
+    enum: ['reader', 'admin'],
+    default: 'reader'
   },
-  isActive: {
+  active: {
     type: Boolean,
     default: true
   },
@@ -40,15 +42,15 @@ const userSchema = new mongoose.Schema({
     type: Date,
     default: Date.now
   },
-  updatedAt: {
+  lastLogin: {
     type: Date,
     default: Date.now
   }
-}, { timestamps: true });
+});
 
-// Hash password before saving
+// Hash password before saving (only for local auth)
 userSchema.pre('save', async function(next) {
-  if (!this.isModified('password')) return next();
+  if (!this.isModified('password') || this.authProvider !== 'local') return next();
   
   try {
     const salt = await bcrypt.genSalt(10);
@@ -61,6 +63,7 @@ userSchema.pre('save', async function(next) {
 
 // Method to compare passwords
 userSchema.methods.comparePassword = async function(candidatePassword) {
+  if (this.authProvider !== 'local') return false;
   return await bcrypt.compare(candidatePassword, this.password);
 };
 

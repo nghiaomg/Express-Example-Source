@@ -1,10 +1,14 @@
 const userRoutes = require('../routes/user.routes');
+const articleRoutes = require('../routes/article.routes');
+const categoryRoutes = require('../routes/category.routes');
+const tagRoutes = require('../routes/tag.routes');
 
 const setupRoutes = (app) => {
-  // API routes
   app.use('/api/users', userRoutes);
+  app.use('/api/articles', articleRoutes);
+  app.use('/api/categories', categoryRoutes);
+  app.use('/api/tags', tagRoutes);
   
-  // Default route
   app.get('/', (req, res) => {
     res.json({
       success: true,
@@ -13,7 +17,6 @@ const setupRoutes = (app) => {
     });
   });
   
-  // 404 handler - should be after all routes
   app.use((req, res) => {
     res.status(404).json({
       success: false,
